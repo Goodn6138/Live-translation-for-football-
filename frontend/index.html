@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chinese → English Translator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Paste an audio URL:</h2>
+  <input id="url" type="text" size="80" placeholder="https://example.com/audio.mp3"/>
+  <button onclick="translate()">Translate</button>
 
+  <iframe id="siteFrame"></iframe>
+  <div class="overlay" id="translationBox">Waiting for translation...</div>
+
+  <script>
+    async function translate() {
+      const audioUrl = document.getElementById("url").value;
+      document.getElementById("siteFrame").src = audioUrl;
+
+      let resp = await fetch(`http://localhost:8000/translate?audio_url=${encodeURIComponent(audioUrl)}`);
+      let data = await resp.json();
+
+      if (data.results.length > 0) {
+        let englishText = data.results.map(r => r.english).join(" ");
+        document.getElementById("translationBox").innerText = englishText;
+      } else {
+        document.getElementById("translationBox").innerText = "No translation found.";
+      }
+    }
+  </script>
+</body>
+</html>
